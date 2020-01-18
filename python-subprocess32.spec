@@ -8,7 +8,7 @@
 
 Name:           python-subprocess32
 Version:        3.2.6
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Backport of subprocess module from Python 3.2 to Python 2.*
 
 License:        Python
@@ -17,6 +17,10 @@ Source0:        https://files.pythonhosted.org/packages/source/s/%{srcname}/%{sr
 
 BuildRequires:  python2-devel
 BuildRequires:  python-test
+
+# Fix heap overflow when parsing too many arguments
+# upstream fix: https://github.com/google/python-subprocess32/pull/55
+Patch0:     fix-heap-overflow.patch
 
 %global _description\
 Backport of the subprocess module from Python 3.2 for use on 2.x.\
@@ -32,6 +36,8 @@ Summary: %summary
 
 %prep
 %setup -q -n subprocess32-%{version}
+
+%patch0 -p1
 
 
 %build
@@ -55,6 +61,10 @@ PYTHONPATH=$(pwd) %{__python2} test_subprocess32.py
 
 
 %changelog
+* Mon Nov 26 2018 Marcel Plch <mplch@redhat.com> - 3.2.6-14
+- Backport upstream patch for heap overflow when parsing too many arguments
+- Resolves: rhbz#1619386
+
 * Mon May 21 2018 Charalampos Stratakis <cstratak@redhat.com> - 3.2.6-13
 - Import into RHEL 7.6 (rhbz#1440695)
 
